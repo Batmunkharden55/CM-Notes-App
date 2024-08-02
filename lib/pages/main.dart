@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_notesapp/service/firestore_service.dart';
 import 'package:flutter/material.dart';
 
+import 'my_screen.dart';
+
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
@@ -35,16 +37,34 @@ class _MainPageState extends State<MainPage> {
                       //go back after
                       Navigator.pop(context);
                     },
-                    child: Text('Add'))
+                    child: const Text('Хадгалах'))
               ],
             ));
   }
 
   @override
   Widget build(BuildContext context) {
+
+    var height = MediaQuery.of(context).size.height;
+
     return Scaffold(
+      backgroundColor: Colors.blue[200],
       appBar: AppBar(
-        title: Text('Notes'),
+        centerTitle: true,
+        backgroundColor: Colors.blue[400],
+        leading: const FlutterLogo(),
+        title: const Text('Тэмдэглэл'),
+        actions: [
+          InkWell(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const MyScreen()));
+            },
+            child: const CircleAvatar(
+              backgroundImage: AssetImage('lib/assets/profile.JPG'),
+            ),
+          )
+        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: createService.getNotesStream(),
@@ -67,26 +87,33 @@ class _MainPageState extends State<MainPage> {
                   String noteText = data['note'];
                   //display as a list tile
                   return ListTile(
-                    title: Text(noteText),
+                    title: Text(noteText, style: TextStyle(
+                      fontSize: height * 0.065,
+
+                    ),),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         //updatre button
                         IconButton(
-                          icon: Icon(Icons.auto_fix_normal_sharp),
+                          icon: Icon(Icons.auto_fix_normal_sharp,
+                          size: height * 0.076,
+                          color: Colors.yellow,),
                           onPressed: () {
                             openNoteBox(docID);
                           },
                         ),
                         IconButton(onPressed: (){
                           createService.deleteNotes(docID);
-                        }, icon: Icon(Icons.delete))
+                        }, icon: Icon(Icons.delete,
+                          size: height*0.076,
+                          color: Colors.red,))
                       ],
                     ),
                   );
                 });
           } else {
-            return Text('No notes...');
+            return const Text('Тэмдэглэл алга...');
           }
         },
       ),
@@ -94,8 +121,11 @@ class _MainPageState extends State<MainPage> {
         onPressed: () {
           openNoteBox(null);
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
+
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
     );
   }
 }
